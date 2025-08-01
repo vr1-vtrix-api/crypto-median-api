@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Crypto API Status</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      background: #111;
+      color: #fff;
+      padding: 20px;
+      text-align: center;
+    }
+    input {
+      padding: 10px;
+      font-size: 16px;
+    }
+    button {
+      padding: 10px 20px;
+      margin-left: 10px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+    .output {
+      margin-top: 20px;
+      font-size: 18px;
+      color: #0f0;
+    }
+  </style>
+</head>
+<body>
+  <h1>🔍 Crypto Median Price Checker</h1>
+  <p>Enter symbol like <strong>BTC</strong>, <strong>ETH</strong>, <strong>SOL</strong></p>
+  
+  <input type="text" id="symbolInput" placeholder="Enter coin symbol (e.g. BTC)" />
+  <button onclick="checkStatus()">Check</button>
+  
+  <div class="output" id="output"></div>
+
+  <script>
+    async function checkStatus() {
+      const symbol = document.getElementById("symbolInput").value.toUpperCase().trim();
+      const output = document.getElementById("output");
+
+      if (!symbol) {
+        output.textContent = "❗ Please enter a crypto symbol.";
+        return;
+      }
+
+      output.textContent = "🔄 Fetching...";
+
+      try {
+        const res = await fetch(`/api/${symbol}`);
+        const data = await res.json();
+
+        if (res.ok) {
+          output.textContent = `✅ ${data.symbol}: Median Price is $${data.medianPrice.toFixed(2)} (as of ${new Date(data.time).toLocaleTimeString()})`;
+        } else {
+          output.textContent = `❌ Error: ${data.error || "Unknown issue"}`;
+        }
+      } catch (err) {
+        output.textContent = `❌ Network or server error: ${err.message}`;
+      }
+    }
+  </script>
+</body>
+</html>
